@@ -13,6 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", help="path to save extracted data (e.g., 'output.csv')")
     parser.add_argument("-v", "--verbose", help="toggle to show intermediate information", action='store_true')
     parser.add_argument("-f", "--force", help="overwrite the output file if it exists", action='store_true')
+    parser.add_argument("-t", "--truncate", help="truncates the extraction window if it extends before or after the data timeline", action='store_true')
     args = parser.parse_args()
 
     START_TIME = args.start
@@ -36,14 +37,24 @@ if __name__ == "__main__":
     last_time = raw[0] + (len(data) * 1/frequency)
 
     #Data input checks
+    truncated_start = False
+    truncated_end = False
     if(START_TIME < first_time):
-        print("Error: Beginning of selected range (", datetime.fromtimestamp(START_TIME), ") is before the start of the",
-              " data (", datetime.fromtimestamp(first_time), ")!")
-        exit(1)
+        if(args.truncate):
+            START_TIME = first_time
+            truncated_start = True
+        else:
+            print("Error: Beginning of selected range (", datetime.fromtimestamp(START_TIME), ") is before the start of the",
+                  "data (", datetime.fromtimestamp(first_time), ")! Perhaps you'd like to use the --truncate option?")
+            exit(1)
     if(END_TIME > last_time):
-        print("Error: End of selected range (", datetime.fromtimestamp(END_TIME), ") is before the start of the",
-              " data (", datetime.fromtimestamp(last_time), ")!")
-        exit(1)
+        if (args.truncate):
+            END_TIME = last_time
+            truncated_end = True
+        else:
+            print("Error: End of selected range (", datetime.fromtimestamp(END_TIME), ") is after the end of the",
+                  "data (", datetime.fromtimestamp(last_time), ")! Perhaps you'd like to use the --truncate option?")
+            exit(1)
     if(START_TIME >= END_TIME):
         print("Error: Beginning of selected range (", datetime.fromtimestamp(START_TIME), ") is the same or after the end of the",
               " selected range (", datetime.fromtimestamp(END_TIME), ")!")
@@ -52,14 +63,16 @@ if __name__ == "__main__":
 
     #Print some summary information
     if(args.verbose):
-        print("First Sample Collected At:",datetime.fromtimestamp(first_time))
-        print("Last Sample Collected At:", datetime.fromtimestamp(last_time))
-        print("Number of Samples:", len(data))
+        print("All Data-------------------------------")
+        print("From:",datetime.fromtimestamp(first_time))
+        print("To:", datetime.fromtimestamp(last_time))
+        print('Number of Samples: ', len(data))
         print()
 
-        print("Extracting Range\nFrom:", datetime.fromtimestamp(START_TIME))
-        print("TO:", datetime.fromtimestamp(END_TIME))
-
+        print("Extracted Range-------------------------")
+        print("From:", datetime.fromtimestamp(START_TIME), "(truncated)" if truncated_start else "")
+        print("To:", datetime.fromtimestamp(END_TIME), "(truncated)" if truncated_end else "")
+        print("Number of Selected Samples: ", format((END_TIME - START_TIME) * frequency, '.0f'))
 
     #Extract the interesting data
     times = np.arange(first_time, last_time, 1/frequency)

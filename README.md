@@ -13,19 +13,19 @@ or
 
 # Running
 
-Call the file as such:
+Execute the file from a bash shell (terminal) as such:
 
 ``python Parser.py [args]``
 
 Running with `-h` or `--help` will show you the supported arguments and their functionality.
 
-As an example, if you wanted to parse the file `input.csv` and extract the data ranging from
-`2018-03-29 20:23:29` to `2018-03-29 20:30:09` and outputting the information into `output.csv`,
+As an example, if you wanted to extract the data ranging from
+`2018-03-29 20:23:29` to `2018-03-29 20:30:09` from `input.csv` to `output.csv`,
 you would run the following:
 
 ``python Parser.py 1522369409 1522369809 test.csv -o output.csv``
 
-Again, for additional syntax and functionality, see the help command.
+For additional syntax and functionality, see the help command.
 
 # Input and Output Format
 
@@ -38,7 +38,7 @@ The input file is expected to have the following parameters:
 
 (3) The second row contains the sampling frequency in Hz;
 
-(4) All subsequent rows contain the sampled data with the third row being the data sampled
+(4) All subsequent rows contain the sampled data with the third row being the datum sampled
 at the timestamp from row one.
 
 ### Output
@@ -51,5 +51,5 @@ The output file will have the following format:
 
 (3) The second row contains the sampling frequency in Hz;
 
-(4) All subsequent rows contain the sampled data with the third row being the data sampled
+(4) All subsequent rows contain the sampled data with the third row being the datum sampled
 at the timestamp from row one.
